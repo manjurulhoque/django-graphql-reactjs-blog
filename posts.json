@@ -1,0 +1,41 @@
+[
+  {
+    "model": "core.Category",
+    "pk": 1,
+    "fields": {
+      "title": "Python"
+    }
+  },
+  {
+    "model": "core.Category",
+    "pk": 2,
+    "fields": {
+      "title": "PHP"
+    }
+  },
+  {
+    "model": "core.Category",
+    "pk": 3,
+    "fields": {
+      "title": "C++"
+    }
+  },
+  {
+    "model": "core.Post",
+    "pk": 1,
+    "fields": {
+      "title": "First post",
+      "description": "First post description",
+      "category_id": 1
+    }
+  },
+  {
+    "model": "core.Post",
+    "pk": 2,
+    "fields": {
+      "title": "Second post",
+      "description": "Second post description",
+      "category_id": 2
+    }
+  }
+]
