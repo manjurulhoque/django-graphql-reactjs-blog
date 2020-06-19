@@ -14,8 +14,10 @@ function App() {
         <ApolloProvider client={client}>
             <Router basename="/">
                 <NavBar/>
-                <div className="App">
-                    <BaseRouter/>
+                <div className="container">
+                    <div className="mt-3">
+                        <BaseRouter/>
+                    </div>
                 </div>
             </Router>
         </ApolloProvider>

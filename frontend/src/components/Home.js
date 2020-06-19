@@ -12,19 +12,24 @@ const POSTS_QUERY = gql`
 `;
 
 function Home() {
-    const {data, loading} = useQuery(
+    const {data, loading, error} = useQuery(
         POSTS_QUERY
     );
 
     if (loading) return <h4>Loading...</h4>;
+    if (error) return <h4>{error}</h4>;
 
-    return data.posts.map(({id, title}) => (
-        <div key={id}>
-            <p>
-                Post - {id}: {title}
-            </p>
-        </div>
-    ));
+    return (
+        <ul className="list-group">
+            {data.posts.map(({id, title}) => (
+                <li key={id} className="list-group-item d-flex justify-content-between">
+                    <p className="p-0 m-0 flex-grow-1">{title}</p>
+                    <button className="btn-success">EDIT</button>
+                    <button className="btn-danger">DELETE</button>
+                </li>
+            ))}
+        </ul>
+    )
 
     // return (
     //     <Fragment>
