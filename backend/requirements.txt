@@ -1,12 +1,15 @@
 aniso8601==7.0.0
 asgiref==3.2.7
 Django==3.0.7
+django-cors-headers==3.4.0
+django-graphql-jwt==0.3.1
 graphene==2.1.8
 graphene-django==2.10.1
 graphene-django-optimizer==0.6.2
 graphql-core==2.3.2
 graphql-relay==2.0.1
 promise==2.3
+PyJWT==1.7.1
 pytz==2020.1
 Rx==1.6.1
 singledispatch==3.4.0.3
