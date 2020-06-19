@@ -1,6 +1,9 @@
+import graphene
+from graphql import GraphQLError
+
 from .object_types import *
 from ..models import *
-from .inputs import *
+from .inputs import CategoryInput, PostInput
 
 
 class CreateCategory(graphene.Mutation):
@@ -38,6 +41,30 @@ class UpdateCategory(graphene.Mutation):
         return UpdateCategory(ok=ok, category=None)
 
 
+class DeleteCategory(graphene.Mutation):
+    ok = graphene.Boolean()
+    message = graphene.String()
+
+    class Arguments:
+        id = graphene.Int(required=True)
+
+    @staticmethod
+    def mutate(root, info, id, input=None):
+        ok = False
+        try:
+            category_instance = Category.objects.get(pk=id)
+        except:
+            category_instance = None
+        if category_instance:
+            ok = True
+            message = 'Category successfully deleted'
+            category_instance.delete()
+            return DeleteCategory(ok=ok, message=message)
+        message = 'Something went wrong'
+        # return DeleteCategory(ok=ok, message=message)
+        return CustomMessage(ok=ok, message=message)
+
+
 class CreatePost(graphene.Mutation):
     class Arguments:
         input = PostInput(required=True)
@@ -58,3 +85,4 @@ class Mutation(graphene.ObjectType):
     create_post = CreatePost.Field()
     create_category = CreateCategory.Field()
     update_category = UpdateCategory.Field()
+    delete_category = DeleteCategory.Field()
