@@ -1,15 +1,8 @@
-import React, {Fragment} from "react";
-import gql from 'graphql-tag';
-import {Query, useQuery} from 'react-apollo';
+import React from "react";
+import {useQuery} from 'react-apollo';
+import {NavLink} from 'react-router-dom';
+import {POSTS_QUERY} from '../queries';
 
-const POSTS_QUERY = gql`
-  query posts {
-    posts {
-      id
-      title
-    }
-  }
-`;
 
 function Home() {
     const {data, loading, error} = useQuery(
@@ -24,8 +17,8 @@ function Home() {
             {data.posts.map(({id, title}) => (
                 <li key={id} className="list-group-item d-flex justify-content-between">
                     <p className="p-0 m-0 flex-grow-1">{title}</p>
-                    <button className="btn-success">EDIT</button>
-                    <button className="btn-danger">DELETE</button>
+                    <NavLink exact to={`/edit/${id}`} className="btn btn-success mr-1">EDIT</NavLink>
+                    <button className="btn btn-danger">DELETE</button>
                 </li>
             ))}
         </ul>

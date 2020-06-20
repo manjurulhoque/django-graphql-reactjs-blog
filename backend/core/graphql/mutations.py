@@ -81,8 +81,41 @@ class CreatePost(graphene.Mutation):
         return CreatePost(ok=ok, post=post_instance)
 
 
+class UpdatePost(graphene.Mutation):
+    class Arguments:
+        id = graphene.Int(required=True)
+        input = PostInput(required=True)
+
+    ok = graphene.Boolean()
+    post = graphene.Field(PostType)
+    message = graphene.String()
+
+    @staticmethod
+    def mutate(root, info, id, input=None):
+        ok = True
+        message = "Post successfully updated"
+        if input.category_id:
+            category = Category.objects.get(id=input.category_id)
+        else:
+            category = None
+
+        try:
+            post_instance = Post.objects.get(id=id)
+        except:
+            post_instance = None
+        if post_instance:
+            post_instance.title = input.title
+            post_instance.description = input.description or post_instance.description
+            post_instance.category = category or post_instance.category
+            post_instance.save()
+            return UpdatePost(ok=ok, post=post_instance, message=message)
+        message = "Something went wrong"
+        return UpdatePost(ok=ok, post=post_instance, message=message)
+
+
 class Mutation(graphene.ObjectType):
     create_post = CreatePost.Field()
+    update_post = UpdatePost.Field()
     create_category = CreateCategory.Field()
     update_category = UpdateCategory.Field()
     delete_category = DeleteCategory.Field()

@@ -23,8 +23,8 @@ class Query(graphene.ObjectType):
 
         if id is not None:
             try:
-                # return Post.objects.get(pk=id)
-                return gql_optimizer.query(Post.objects.get(pk=id), info)
+                return Post.objects.get(pk=id)
+                # return gql_optimizer.query(Post.objects.get(pk=id), info)
             except:
                 return None
 

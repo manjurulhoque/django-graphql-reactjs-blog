@@ -2,23 +2,8 @@ import React, {useState} from "react";
 import {useQuery, useMutation} from 'react-apollo';
 import gql from 'graphql-tag';
 import {useHistory} from "react-router";
+import {CREATE_POST, CATEGORIES_QUERY} from '../queries';
 
-const CREATE_POST = gql`
-    mutation createPost($input: PostInput!) {
-        createPost(input: $input) {
-            ok
-        }
-    }
-`;
-
-const CATEGORIES_QUERY = gql`
-    query categories {
-        categories {
-          id
-          title
-        }
-    }
-`;
 
 function CreatePost() {
 
