@@ -9,7 +9,7 @@ const client = new ApolloClient({
     uri: 'http://127.0.0.1:8000/graphql'
 });
 
-function App() {
+function App(props) {
     return (
         <ApolloProvider client={client}>
             <Router basename="/">

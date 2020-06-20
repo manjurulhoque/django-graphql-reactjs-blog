@@ -1,5 +1,6 @@
 import graphene
 from graphql import GraphQLError
+import graphql_jwt
 
 from .object_types import *
 from ..models import *
@@ -113,9 +114,61 @@ class UpdatePost(graphene.Mutation):
         return UpdatePost(ok=ok, post=post_instance, message=message)
 
 
+class DeletePost(graphene.Mutation):
+    ok = graphene.Boolean()
+    message = graphene.String()
+
+    class Arguments:
+        id = graphene.Int(required=True)
+
+    @staticmethod
+    def mutate(root, info, id, input=None):
+        ok = False
+        try:
+            post_instance = Post.objects.get(pk=id)
+        except:
+            post_instance = None
+        if post_instance:
+            ok = True
+            message = 'Post successfully deleted'
+            post_instance.delete()
+            return DeletePost(ok=ok, message=message)
+        message = 'Something went wrong'
+        return DeletePost(ok=ok, message=message)
+
+
+class CreateUser(graphene.Mutation):
+    user = graphene.Field(UserType)
+    ok = graphene.Boolean()
+
+    class Arguments:
+        username = graphene.String(required=True)
+        password = graphene.String(required=True)
+        email = graphene.String(required=True)
+
+    def mutate(self, info, username, password, email):
+        if User.objects.filter(username=username, email=email).exists():
+            raise GraphQLError('User is already exists')
+        user = User(
+            username=username,
+            email=email,
+        )
+        user.set_password(password)
+        user.save()
+        ok = True
+
+        return CreateUser(user=user, ok=ok)
+
+
 class Mutation(graphene.ObjectType):
     create_post = CreatePost.Field()
     update_post = UpdatePost.Field()
+    delete_post = DeletePost.Field()
     create_category = CreateCategory.Field()
     update_category = UpdateCategory.Field()
     delete_category = DeleteCategory.Field()
+    create_user = CreateUser.Field()
+    # authentication
+    user_login = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()

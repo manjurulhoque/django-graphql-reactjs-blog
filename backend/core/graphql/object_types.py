@@ -1,7 +1,13 @@
 import graphene
+from django.contrib.auth.models import User
 from graphene_django import DjangoObjectType
 
 from core.models import *
+
+
+class UserType(DjangoObjectType):
+    class Meta:
+        model = User
 
 
 class CategoryType(DjangoObjectType):

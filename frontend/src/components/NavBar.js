@@ -19,6 +19,12 @@ function NavBar() {
                     <li className="nav-item">
                         <NavLink to="/create" exact className="nav-link" activeClassName="active">Create post</NavLink>
                     </li>
+                    <li className="nav-item">
+                        <NavLink to="/signup" exact className="nav-link" activeClassName="active">Signup</NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink to="/login" exact className="nav-link" activeClassName="active">Login</NavLink>
+                    </li>
                     <li className="nav-item dropdown">
                         <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

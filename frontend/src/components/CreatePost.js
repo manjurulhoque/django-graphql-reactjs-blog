@@ -1,6 +1,5 @@
 import React, {useState} from "react";
 import {useQuery, useMutation} from 'react-apollo';
-import gql from 'graphql-tag';
 import {useHistory} from "react-router";
 import {CREATE_POST, CATEGORIES_QUERY} from '../queries';
 
@@ -30,8 +29,11 @@ function CreatePost() {
             });
         }).catch(e => {
             console.log(e);
+            if (e.errors.length) {
+                alert(e.errors[0].message);
+            }
             alert("Something went wrong");
-        })
+        });
     }
 
     const [createPost, result] = useMutation(CREATE_POST);

@@ -9,6 +9,7 @@ class Query(graphene.ObjectType):
     category = graphene.Field(CategoryType, id=graphene.Int())
     posts = graphene.List(PostType)
     categories = graphene.List(CategoryType)
+    me = graphene.Field(UserType)
 
     def resolve_posts(self, info):
         # return Post.objects.all()
@@ -37,3 +38,9 @@ class Query(graphene.ObjectType):
             return Category.objects.prefetch_related('post_set').get(pk=id)
 
         return None
+
+    def resolve_me(self, info):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception('Authentication Failure!')
+        return user

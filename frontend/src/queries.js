@@ -25,6 +25,15 @@ const UPDATE_POST = gql`
     }
 `;
 
+const DELETE_POST = gql`
+    mutation deletePost($id: Int!) {
+        deletePost(id: $id) {
+            ok
+            message
+        }
+    }
+`;
+
 const CATEGORIES_QUERY = gql`
     query categories {
         categories {
@@ -48,10 +57,24 @@ const GET_POST_QUERY = gql`
     }
 `;
 
+const USER_CREATE_QUERY = gql`
+  mutation createUser($username: String!, $email: String!, $password: String!) { 
+      createUser(username: $username, email: $email, password: $password) {
+         ok
+         user {
+           username
+           email
+         }
+      }
+  }
+`;
+
 export {
     POSTS_QUERY,
     CREATE_POST,
     UPDATE_POST,
     CATEGORIES_QUERY,
     GET_POST_QUERY,
+    DELETE_POST,
+    USER_CREATE_QUERY,
 }
