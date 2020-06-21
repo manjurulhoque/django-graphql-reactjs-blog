@@ -69,6 +69,16 @@ const USER_CREATE_QUERY = gql`
   }
 `;
 
+const USER_LOGIN_MUTATION = gql`
+    mutation userLogin($username: String!, $password: String!) {
+        userLogin(username: $username, password: $password) {
+            token
+            payload
+            refreshExpiresIn
+        }
+    }
+`;
+
 export {
     POSTS_QUERY,
     CREATE_POST,
@@ -77,4 +87,5 @@ export {
     GET_POST_QUERY,
     DELETE_POST,
     USER_CREATE_QUERY,
+    USER_LOGIN_MUTATION,
 }
