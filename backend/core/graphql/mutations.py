@@ -1,10 +1,10 @@
-import graphene
 from graphql import GraphQLError
 import graphql_jwt
 
 from .object_types import *
 from ..models import *
 from .inputs import CategoryInput, PostInput
+from accounts import mutations as user_mutation
 
 
 class CreateCategory(graphene.Mutation):
@@ -160,7 +160,7 @@ class CreateUser(graphene.Mutation):
         return CreateUser(user=user, ok=ok)
 
 
-class Mutation(graphene.ObjectType):
+class Mutation(user_mutation.AuthMutation, graphene.ObjectType):
     create_post = CreatePost.Field()
     update_post = UpdatePost.Field()
     delete_post = DeletePost.Field()
@@ -168,7 +168,3 @@ class Mutation(graphene.ObjectType):
     update_category = UpdateCategory.Field()
     delete_category = DeleteCategory.Field()
     create_user = CreateUser.Field()
-    # authentication
-    user_login = graphql_jwt.ObtainJSONWebToken.Field()
-    verify_token = graphql_jwt.Verify.Field()
-    refresh_token = graphql_jwt.Refresh.Field()
