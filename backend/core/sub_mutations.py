@@ -1,13 +1,16 @@
 from graphql import GraphQLError
-import graphql_jwt
 
+from accounts.mixins import DynamicArgsMixin
+from common.bases import MutationMixin
+from common.graphql_mixins import SingleObjectMixin
+from common.permissions import IsAuthenticated
+from .graphql_mixins import CreateCategoryMixin, UpdateCategoryMixin, DeleteCategoryMixin, CreatePostMixin, \
+    UpdatePostMixin, DeletePostMixin
 from .object_types import *
-from ..models import *
 from .inputs import CategoryInput, PostInput
-from accounts import mutations as user_mutation
 
 
-class CreateCategory(graphene.Mutation):
+class CreateCategory2(graphene.Mutation):
     class Arguments:
         input = CategoryInput(required=True)
 
@@ -22,7 +25,12 @@ class CreateCategory(graphene.Mutation):
         return CreateCategory(ok=ok, category=category_instance)
 
 
-class UpdateCategory(graphene.Mutation):
+class CreateCategory(MutationMixin, DynamicArgsMixin, CreateCategoryMixin, graphene.Mutation):
+    __doc__ = CreateCategoryMixin.__doc__
+    _required_args = ["title"]
+
+
+class UpdateCategory2(graphene.Mutation):
     class Arguments:
         id = graphene.Int(required=True)
         input = CategoryInput(required=True)
@@ -42,7 +50,16 @@ class UpdateCategory(graphene.Mutation):
         return UpdateCategory(ok=ok, category=None)
 
 
-class DeleteCategory(graphene.Mutation):
+class UpdateCategory(MutationMixin, DynamicArgsMixin, SingleObjectMixin, UpdateCategoryMixin, graphene.Mutation):
+    __doc__ = UpdateCategoryMixin.__doc__
+    _required_args = {
+        'pk': 'ID',
+        "title": 'String'
+    }
+    model = Category
+
+
+class DeleteCategory2(graphene.Mutation):
     ok = graphene.Boolean()
     message = graphene.String()
 
@@ -66,7 +83,14 @@ class DeleteCategory(graphene.Mutation):
         return CustomMessage(ok=ok, message=message)
 
 
-class CreatePost(graphene.Mutation):
+class DeleteCategory(MutationMixin, DynamicArgsMixin, SingleObjectMixin, DeleteCategoryMixin, graphene.Mutation):
+    _required_args = {
+        'pk': 'ID',
+    }
+    model = Category
+
+
+class CreatePost2(graphene.Mutation):
     class Arguments:
         input = PostInput(required=True)
 
@@ -82,7 +106,17 @@ class CreatePost(graphene.Mutation):
         return CreatePost(ok=ok, post=post_instance)
 
 
-class UpdatePost(graphene.Mutation):
+class CreatePost(MutationMixin, DynamicArgsMixin, CreatePostMixin, graphene.Mutation):
+    __doc__ = CreatePostMixin.__doc__
+    # _required_args = ["title", "description", "category"]
+    _required_args = {
+        'title': 'String',
+        'description': 'String',
+        'category': 'Int',
+    }
+
+
+class UpdatePost2(graphene.Mutation):
     class Arguments:
         id = graphene.Int(required=True)
         input = PostInput(required=True)
@@ -114,7 +148,17 @@ class UpdatePost(graphene.Mutation):
         return UpdatePost(ok=ok, post=post_instance, message=message)
 
 
-class DeletePost(graphene.Mutation):
+class UpdatePost(MutationMixin, DynamicArgsMixin, SingleObjectMixin, UpdatePostMixin, graphene.Mutation):
+    _required_args = {
+        "pk": 'ID',
+        "title": 'String',
+        "description": 'String',
+        "category": 'Int',
+    }
+    model = Post
+
+
+class DeletePost2(graphene.Mutation):
     ok = graphene.Boolean()
     message = graphene.String()
 
@@ -135,6 +179,13 @@ class DeletePost(graphene.Mutation):
             return DeletePost(ok=ok, message=message)
         message = 'Something went wrong'
         return DeletePost(ok=ok, message=message)
+
+
+class DeletePost(MutationMixin, DynamicArgsMixin, SingleObjectMixin, DeletePostMixin, graphene.Mutation):
+    _required_args = {
+        'pk': 'ID',
+    }
+    model = Post
 
 
 class CreateUser(graphene.Mutation):
@@ -158,13 +209,3 @@ class CreateUser(graphene.Mutation):
         ok = True
 
         return CreateUser(user=user, ok=ok)
-
-
-class Mutation(user_mutation.AuthMutation, graphene.ObjectType):
-    create_post = CreatePost.Field()
-    update_post = UpdatePost.Field()
-    delete_post = DeletePost.Field()
-    create_category = CreateCategory.Field()
-    update_category = UpdateCategory.Field()
-    delete_category = DeleteCategory.Field()
-    create_user = CreateUser.Field()

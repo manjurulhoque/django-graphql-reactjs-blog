@@ -1,6 +1,8 @@
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from datetime import timedelta
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -27,6 +29,7 @@ INSTALLED_APPS = [
     'core',
     'accounts',
     'graphene_django',
+    'graphql_jwt.refresh_token',
 ]
 
 MIDDLEWARE = [
@@ -113,9 +116,19 @@ GRAPHENE = {
     ],
 }
 
+GRAPHQL_JWT = {
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+    'JWT_EXPIRATION_DELTA': timedelta(days=3),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+}
+
 CORS_ORIGIN_ALLOW_ALL = True
 
 AUTHENTICATION_BACKENDS = [
     'graphql_jwt.backends.JSONWebTokenBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+REGISTER_MUTATION_FIELDS = ["email", "username"]
+LOGIN_ALLOWED_FIELDS = ['username', 'email']

@@ -1,4 +1,5 @@
 from django.utils.translation import gettext as _
+from graphql import GraphQLError
 
 
 class GraphQLAuthError(Exception):
@@ -28,7 +29,7 @@ class EmailAlreadyInUse(GraphQLAuthError):
 
 
 class TokenScopeError(GraphQLAuthError):
-    default_message = _("This token if for something else.")
+    default_message = _("This token is for something else.")
 
 
 class WrongUsage(GraphQLAuthError):
@@ -37,3 +38,11 @@ class WrongUsage(GraphQLAuthError):
     """
 
     default_message = _("Wrong usage, check your code!.")
+
+
+class PermissionDeniedError(GraphQLError):
+    default_message = _("You don't have permission to access this resource."),
+
+
+class DoesNotExistsError(GraphQLError):
+    default_message = _("No object found"),

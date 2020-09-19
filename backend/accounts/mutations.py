@@ -1,7 +1,7 @@
 import graphene
 import graphql_jwt
 
-from .sub_mutations import Register
+from .sub_mutations import Register, ObtainJSONWebToken
 
 
 class AuthMutation(graphene.ObjectType):

@@ -1,7 +1,6 @@
-import graphene
 import graphene_django_optimizer as gql_optimizer
 
-from core.graphql.object_types import *
+from core.object_types import *
 
 
 class Query(graphene.ObjectType):
