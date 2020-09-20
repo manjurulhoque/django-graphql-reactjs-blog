@@ -107,7 +107,8 @@ class CreatePost(graphene.Mutation):
         if not form.is_valid():
             return CreatePost(success=False, errors=form.errors.get_json_data(), post=None)
         category = Category.objects.get(id=input.category)
-        post_instance = Post(title=input.title, description=input.description, category=category)
+        post_instance = Post(title=input.title, description=input.description, category=category,
+                             user=info.context.user)
         post_instance.save()
         return CreatePost(success=True, errors=None, post=post_instance)
 
