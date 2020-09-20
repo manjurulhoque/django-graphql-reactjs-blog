@@ -1,0 +1,41 @@
+mutation {
+  # createPost(title: "Python Programming", description: "Test description", category: 3) {
+  #   success
+  #   errors
+  # }
+  # createCategory(title: "Python Programming2") {
+  #   success
+  #   errors
+  # }
+
+  # updateCategory(pk: 7, title: "Update") {
+  #   success
+  #   errors
+  # }
+
+  # deleteCategory(pk: 7) {
+  #   success
+  #   errors
+  # }
+
+  # updatePost(pk: 7, title: "Update", description: "update description", category: 4) {
+  #   success
+  #   errors
+  # }
+
+  # deletePost(pk: 4) {
+  #   success
+  #   errors
+  # }
+
+  # register(username: "manjurul", password1: "Abcdefgh.1", password2: "Abcdefgh.1", email: "manjurulhoque@gmail.com") {
+  #   success
+  #   errors
+  # }
+
+  # login(username: "manjurul", password: "Abcdefgh.1") {
+  #   token
+  #   refreshExpiresIn
+  #   refreshToken
+  # }
+}

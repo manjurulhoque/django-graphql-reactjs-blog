@@ -10,4 +10,4 @@ class PostInput(graphene.InputObjectType):
     id = graphene.ID()
     title = graphene.String()
     description = graphene.String()
-    category_id = graphene.Int(name="category")
+    category = graphene.Int(name="category")

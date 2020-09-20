@@ -1,16 +1,18 @@
 from graphql import GraphQLError
+from graphql_jwt.decorators import login_required
 
 from accounts.mixins import DynamicArgsMixin
 from common.bases import MutationMixin
 from common.graphql_mixins import SingleObjectMixin
-from common.permissions import IsAuthenticated
+from common.types import ExpectedErrorType
+from .forms import PostForm
 from .graphql_mixins import CreateCategoryMixin, UpdateCategoryMixin, DeleteCategoryMixin, CreatePostMixin, \
     UpdatePostMixin, DeletePostMixin
 from .object_types import *
 from .inputs import CategoryInput, PostInput
 
 
-class CreateCategory2(graphene.Mutation):
+class CreateCategory(graphene.Mutation):
     class Arguments:
         input = CategoryInput(required=True)
 
@@ -25,12 +27,12 @@ class CreateCategory2(graphene.Mutation):
         return CreateCategory(ok=ok, category=category_instance)
 
 
-class CreateCategory(MutationMixin, DynamicArgsMixin, CreateCategoryMixin, graphene.Mutation):
+class CreateCategory2(MutationMixin, DynamicArgsMixin, CreateCategoryMixin, graphene.Mutation):
     __doc__ = CreateCategoryMixin.__doc__
     _required_args = ["title"]
 
 
-class UpdateCategory2(graphene.Mutation):
+class UpdateCategory(graphene.Mutation):
     class Arguments:
         id = graphene.Int(required=True)
         input = CategoryInput(required=True)
@@ -50,7 +52,7 @@ class UpdateCategory2(graphene.Mutation):
         return UpdateCategory(ok=ok, category=None)
 
 
-class UpdateCategory(MutationMixin, DynamicArgsMixin, SingleObjectMixin, UpdateCategoryMixin, graphene.Mutation):
+class UpdateCategory2(MutationMixin, DynamicArgsMixin, SingleObjectMixin, UpdateCategoryMixin, graphene.Mutation):
     __doc__ = UpdateCategoryMixin.__doc__
     _required_args = {
         'pk': 'ID',
@@ -59,7 +61,7 @@ class UpdateCategory(MutationMixin, DynamicArgsMixin, SingleObjectMixin, UpdateC
     model = Category
 
 
-class DeleteCategory2(graphene.Mutation):
+class DeleteCategory(graphene.Mutation):
     ok = graphene.Boolean()
     message = graphene.String()
 
@@ -83,30 +85,34 @@ class DeleteCategory2(graphene.Mutation):
         return CustomMessage(ok=ok, message=message)
 
 
-class DeleteCategory(MutationMixin, DynamicArgsMixin, SingleObjectMixin, DeleteCategoryMixin, graphene.Mutation):
+class DeleteCategory2(MutationMixin, DynamicArgsMixin, SingleObjectMixin, DeleteCategoryMixin, graphene.Mutation):
     _required_args = {
         'pk': 'ID',
     }
     model = Category
 
 
-class CreatePost2(graphene.Mutation):
+class CreatePost(graphene.Mutation):
     class Arguments:
         input = PostInput(required=True)
 
-    ok = graphene.Boolean()
+    success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
     post = graphene.Field(PostType)
 
-    @staticmethod
-    def mutate(root, info, input=None):
-        ok = True
-        category = Category.objects.get(id=input.category_id)
+    @login_required
+    def mutate(self, info, input=None, **kwargs):
+        print(info.context.user)
+        form = PostForm(input)
+        if not form.is_valid():
+            return CreatePost(success=False, errors=form.errors.get_json_data(), post=None)
+        category = Category.objects.get(id=input.category)
         post_instance = Post(title=input.title, description=input.description, category=category)
         post_instance.save()
-        return CreatePost(ok=ok, post=post_instance)
+        return CreatePost(success=True, errors=None, post=post_instance)
 
 
-class CreatePost(MutationMixin, DynamicArgsMixin, CreatePostMixin, graphene.Mutation):
+class CreatePost2(MutationMixin, DynamicArgsMixin, CreatePostMixin, graphene.Mutation):
     __doc__ = CreatePostMixin.__doc__
     # _required_args = ["title", "description", "category"]
     _required_args = {
@@ -116,39 +122,34 @@ class CreatePost(MutationMixin, DynamicArgsMixin, CreatePostMixin, graphene.Muta
     }
 
 
-class UpdatePost2(graphene.Mutation):
+class UpdatePost(graphene.Mutation):
     class Arguments:
         id = graphene.Int(required=True)
         input = PostInput(required=True)
 
-    ok = graphene.Boolean()
     post = graphene.Field(PostType)
-    message = graphene.String()
+    success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
 
     @staticmethod
     def mutate(root, info, id, input=None):
-        ok = True
-        message = "Post successfully updated"
-        if input.category_id:
-            category = Category.objects.get(id=input.category_id)
+        if input.category:
+            category = Category.objects.get(id=input.category)
         else:
-            category = None
+            raise GraphQLError("Category not found")
 
         try:
             post_instance = Post.objects.get(id=id)
         except:
-            post_instance = None
-        if post_instance:
-            post_instance.title = input.title
-            post_instance.description = input.description or post_instance.description
-            post_instance.category = category or post_instance.category
-            post_instance.save()
-            return UpdatePost(ok=ok, post=post_instance, message=message)
-        message = "Something went wrong"
-        return UpdatePost(ok=ok, post=post_instance, message=message)
+            raise GraphQLError("Post not found")
+        form = PostForm(**input, instance=post_instance)
+        if not form.is_valid():
+            return UpdatePost(success=False, errors=form.errors.get_json_data(), post=None)
+        post = form.save()
+        return UpdatePost(success=True, errors=None, post=post)
 
 
-class UpdatePost(MutationMixin, DynamicArgsMixin, SingleObjectMixin, UpdatePostMixin, graphene.Mutation):
+class UpdatePost2(MutationMixin, DynamicArgsMixin, SingleObjectMixin, UpdatePostMixin, graphene.Mutation):
     _required_args = {
         "pk": 'ID',
         "title": 'String',
@@ -158,30 +159,24 @@ class UpdatePost(MutationMixin, DynamicArgsMixin, SingleObjectMixin, UpdatePostM
     model = Post
 
 
-class DeletePost2(graphene.Mutation):
-    ok = graphene.Boolean()
-    message = graphene.String()
+class DeletePost(graphene.Mutation):
+    success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
 
     class Arguments:
         id = graphene.Int(required=True)
 
     @staticmethod
     def mutate(root, info, id, input=None):
-        ok = False
         try:
             post_instance = Post.objects.get(pk=id)
         except:
-            post_instance = None
-        if post_instance:
-            ok = True
-            message = 'Post successfully deleted'
-            post_instance.delete()
-            return DeletePost(ok=ok, message=message)
-        message = 'Something went wrong'
-        return DeletePost(ok=ok, message=message)
+            raise GraphQLError("Post not found")
+        post_instance.delete()
+        return DeletePost(success=True)
 
 
-class DeletePost(MutationMixin, DynamicArgsMixin, SingleObjectMixin, DeletePostMixin, graphene.Mutation):
+class DeletePost2(MutationMixin, DynamicArgsMixin, SingleObjectMixin, DeletePostMixin, graphene.Mutation):
     _required_args = {
         'pk': 'ID',
     }
