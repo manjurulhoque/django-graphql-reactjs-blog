@@ -1,5 +1,5 @@
 from accounts.mutations import AuthMutation
-from .sub_mutations import *
+from .sub_mutations import CreatePost, UpdatePost, DeletePost, CreateCategory, UpdateCategory, DeleteCategory, CreateUser
 
 
 class Mutation(AuthMutation, graphene.ObjectType):
