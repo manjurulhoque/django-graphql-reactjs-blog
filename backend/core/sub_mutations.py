@@ -1,3 +1,5 @@
+import graphene
+from django.contrib.auth import get_user_model
 from graphql import GraphQLError
 from graphql_jwt.decorators import login_required
 
@@ -5,26 +7,37 @@ from accounts.mixins import DynamicArgsMixin
 from common.bases import MutationMixin
 from common.graphql_mixins import SingleObjectMixin
 from common.types import ExpectedErrorType
-from .forms import PostForm
+from .forms import PostForm, CategoryForm
 from .graphql_mixins import CreateCategoryMixin, UpdateCategoryMixin, DeleteCategoryMixin, CreatePostMixin, \
     UpdatePostMixin, DeletePostMixin
-from .object_types import *
+from .models import Category, Post
+from .object_types import UserType, CategoryType, PostType, CustomMessage
 from .inputs import CategoryInput, PostInput
+
+User = get_user_model()
 
 
 class CreateCategory(graphene.Mutation):
     class Arguments:
         input = CategoryInput(required=True)
 
-    ok = graphene.Boolean()
+    success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
     category = graphene.Field(CategoryType)
 
-    @staticmethod
-    def mutate(root, info, input=None):
-        ok = True
+    @login_required
+    def mutate(self, info, input=None):
+        user = info.context.user
+        if user.is_anonymous:
+            raise GraphQLError('You must be logged to create category!')
+
+        form = CategoryForm(input)
+        if not form.is_valid():
+            return CreateCategory(success=False, errors=form.errors.get_json_data(), category=None)
         category_instance = Category(title=input.title)
         category_instance.save()
-        return CreateCategory(ok=ok, category=category_instance)
+
+        return CreateCategory(success=True, errors=None, category=category_instance)
 
 
 class CreateCategory2(MutationMixin, DynamicArgsMixin, CreateCategoryMixin, graphene.Mutation):
@@ -37,19 +50,22 @@ class UpdateCategory(graphene.Mutation):
         id = graphene.Int(required=True)
         input = CategoryInput(required=True)
 
-    ok = graphene.Boolean()
+    success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
     category = graphene.Field(CategoryType)
 
-    @staticmethod
-    def mutate(root, info, id, input=None):
-        ok = False
-        category_instance = Category.objects.get(pk=id)
-        if category_instance:
-            ok = True
-            category_instance.title = input.title
-            category_instance.save()
-            return UpdateCategory(ok=ok, category=category_instance)
-        return UpdateCategory(ok=ok, category=None)
+    @login_required
+    def mutate(self, info, id, input=None):
+        try:
+            category_instance = Category.objects.get(pk=id)
+            form = CategoryForm(instance=category_instance, data=input)
+            if not form.is_valid():
+                return UpdateCategory(success=False, errors=form.errors.get_json_data(), category=None)
+
+            category_instance = form.save()
+            return UpdateCategory(success=True, errors=None, category=category_instance)
+        except Category.DoesNotExist:
+            return GraphQLError("Category doesn't exists")
 
 
 class UpdateCategory2(MutationMixin, DynamicArgsMixin, SingleObjectMixin, UpdateCategoryMixin, graphene.Mutation):
@@ -62,27 +78,22 @@ class UpdateCategory2(MutationMixin, DynamicArgsMixin, SingleObjectMixin, Update
 
 
 class DeleteCategory(graphene.Mutation):
-    ok = graphene.Boolean()
-    message = graphene.String()
+    success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
 
     class Arguments:
         id = graphene.Int(required=True)
 
-    @staticmethod
-    def mutate(root, info, id, input=None):
-        ok = False
+    @login_required
+    def mutate(self, info, id):
         try:
             category_instance = Category.objects.get(pk=id)
-        except:
-            category_instance = None
+        except Category.DoesNotExist:
+            raise GraphQLError("Category not found")
         if category_instance:
-            ok = True
-            message = 'Category successfully deleted'
             category_instance.delete()
-            return DeleteCategory(ok=ok, message=message)
-        message = 'Something went wrong'
-        # return DeleteCategory(ok=ok, message=message)
-        return CustomMessage(ok=ok, message=message)
+            return UpdateCategory(success=True, errors=None)
+        return UpdateCategory(success=False, errors=None)
 
 
 class DeleteCategory2(MutationMixin, DynamicArgsMixin, SingleObjectMixin, DeleteCategoryMixin, graphene.Mutation):
@@ -102,7 +113,6 @@ class CreatePost(graphene.Mutation):
 
     @login_required
     def mutate(self, info, input=None, **kwargs):
-        print(info.context.user)
         form = PostForm(input)
         if not form.is_valid():
             return CreatePost(success=False, errors=form.errors.get_json_data(), post=None)
@@ -141,7 +151,7 @@ class UpdatePost(graphene.Mutation):
 
         try:
             post_instance = Post.objects.get(id=id)
-        except:
+        except Post.DoesNotExist:
             raise GraphQLError("Post not found")
         form = PostForm(**input, instance=post_instance)
         if not form.is_valid():
@@ -171,7 +181,7 @@ class DeletePost(graphene.Mutation):
     def mutate(root, info, id, input=None):
         try:
             post_instance = Post.objects.get(pk=id)
-        except:
+        except Post.DoesNotExist:
             raise GraphQLError("Post not found")
         post_instance.delete()
         return DeletePost(success=True)

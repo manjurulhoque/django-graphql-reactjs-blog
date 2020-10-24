@@ -1,4 +1,5 @@
 import graphene_django_optimizer as gql_optimizer
+from graphene_django.debug import DjangoDebug
 
 from core.object_types import *
 
@@ -9,6 +10,7 @@ class Query(graphene.ObjectType):
     posts = graphene.List(PostType)
     categories = graphene.List(CategoryType)
     me = graphene.Field(UserType)
+    debug = graphene.Field(DjangoDebug, name='_debug')
 
     def resolve_posts(self, info):
         # return Post.objects.all()

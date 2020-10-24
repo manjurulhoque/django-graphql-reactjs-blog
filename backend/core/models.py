@@ -5,7 +5,7 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, unique=True)
 
 
 class Post(models.Model):

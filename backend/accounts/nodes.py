@@ -8,11 +8,11 @@ from accounts.mixins import PermissionDjangoObjectType
 class UserNode(DjangoObjectType, PermissionDjangoObjectType):
     class Meta:
         model = get_user_model()
-        filter_fields = {
-            "email": ["exact"],
-            "username": ["exact", "icontains", "istartswith"],
-            "is_active": ["exact"],
-        }
+        # filter_fields = {
+        #     "email": ["exact"],
+        #     "username": ["exact", "icontains", "istartswith"],
+        #     "is_active": ["exact"],
+        # }
         exclude = ["password"]
         interfaces = (graphene.relay.Node,)
         skip_registry = True

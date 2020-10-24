@@ -7,6 +7,7 @@ from core.models import *
 class UserType(DjangoObjectType):
     class Meta:
         model = User
+        exclude = ('password',)
 
 
 class CategoryType(DjangoObjectType):
@@ -15,6 +16,9 @@ class CategoryType(DjangoObjectType):
 
 
 class PostType(DjangoObjectType):
+    user = graphene.Field(UserType, source='user')
+    category = graphene.Field(CategoryType, source='category')
+
     class Meta:
         model = Post
 

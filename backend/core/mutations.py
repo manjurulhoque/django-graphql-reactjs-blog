@@ -1,3 +1,5 @@
+import graphene
+
 from accounts.mutations import AuthMutation
 from .sub_mutations import CreatePost, UpdatePost, DeletePost, CreateCategory, UpdateCategory, DeleteCategory, CreateUser
 

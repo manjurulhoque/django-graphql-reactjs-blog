@@ -113,6 +113,7 @@ GRAPHENE = {
     'SCHEMA': 'core.schema.schema',  # Where your Graphene schema lives
     'MIDDLEWARE': [
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
+        'graphene_django.debug.DjangoDebugMiddleware'
     ],
 }
 
