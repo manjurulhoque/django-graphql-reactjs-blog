@@ -21,7 +21,6 @@ function Signup(props) {
         let my_errors = [];
 
         register().then(r => {
-            console.log(r);
             if (r.data.register.success) {
                 setSuccess(true);
                 my_errors = [];
@@ -34,7 +33,7 @@ function Signup(props) {
                 for (let [key, errors] of Object.entries(r.data.register.errors)) {
                     errors.map((error, index) => {
                         my_errors.push(error.message);
-                    })
+                    });
                 }
 
                 setErrors(my_errors);

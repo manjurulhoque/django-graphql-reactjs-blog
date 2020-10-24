@@ -67,8 +67,8 @@ const USER_REGISTER_QUERY = gql`
 `;
 
 const USER_LOGIN_MUTATION = gql`
-    mutation userLogin($username: String!, $password: String!) {
-        userLogin(username: $username, password: $password) {
+    mutation login($username: String!, $password: String!) {
+        login(username: $username, password: $password) {
             token
             payload
             refreshExpiresIn
