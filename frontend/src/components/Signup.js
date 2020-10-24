@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import '../auth.css';
-import {USER_CREATE_QUERY} from '../queries';
+import {USER_REGISTER_QUERY} from '../queries';
 import {useMutation} from "react-apollo";
 import {useHistory} from "react-router";
 import {ToastContainer, toast} from 'react-toastify';
@@ -11,32 +11,43 @@ function Signup(props) {
     const history = useHistory();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [passwordOne, setPasswordOne] = useState("");
+    const [passwordTwo, setPasswordTwo] = useState("");
+    const [success, setSuccess] = useState(false);
+    const [errors, setErrors] = useState([]);
 
     const handleSubmit = e => {
         e.preventDefault();
+        let my_errors = [];
 
-        createUser().then(r => {
-            history.push({
-                pathname: "/",
-            });
+        register().then(r => {
+            console.log(r);
+            if (r.data.register.success) {
+                setSuccess(true);
+                my_errors = [];
+                setTimeout(() => {
+                    history.push({
+                        pathname: "/",
+                    });
+                }, 1000);
+            } else {
+                for (let [key, errors] of Object.entries(r.data.register.errors)) {
+                    errors.map((error, index) => {
+                        my_errors.push(error.message);
+                    })
+                }
+
+                setErrors(my_errors);
+            }
         });
-
-        // if (result.error) {
-        //     result.error.graphQLErrors.map(error => {
-        //         console.log(error);
-        //         toast(`${error.message}`);
-        //         // if (error.extensions.code === "constraint-violation")
-        //         //     toast(`${error.message}`);
-        //     });
-        // }
     }
 
-    const [createUser, result] = useMutation(USER_CREATE_QUERY, {
+    const [register, result] = useMutation(USER_REGISTER_QUERY, {
         variables: {
             username: username,
             email: email,
-            password: password,
+            password1: passwordOne,
+            password2: passwordTwo,
         }
     });
 
@@ -51,6 +62,17 @@ function Signup(props) {
                 <div className="col-md-9 register-right">
                     <div className="tab-pane fade show active">
                         <h3 className="register-heading">Register</h3>
+                        {
+                            success ? <div className="alert alert-success" role="alert">Registration successful. Login now!</div> : ''
+                        }
+                        {
+                            errors.length > 0 ?
+                                (
+                                    errors.map((error, index) =>
+                                        <div className="alert alert-danger" key={index} role="alert">{error}</div>
+                                    )
+                                ) : ''
+                        }
                         <div className="row register-form">
                             <div className="col-md-12">
                                 <form onSubmit={handleSubmit}>
@@ -76,10 +98,19 @@ function Signup(props) {
                                         <input
                                             type="password"
                                             className="form-control"
-                                            value={password}
+                                            value={passwordOne}
                                             required
-                                            onChange={e => setPassword(e.target.value)}
+                                            onChange={e => setPasswordOne(e.target.value)}
                                             placeholder="Password"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            value={passwordTwo}
+                                            required
+                                            onChange={e => setPasswordTwo(e.target.value)}
+                                            placeholder="Confirm Password"/>
                                     </div>
                                     <input type="submit" className="btnRegister" value="Register"/>
                                 </form>

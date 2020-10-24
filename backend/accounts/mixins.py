@@ -41,7 +41,7 @@ class RegisterMixin(Output):
         f = cls.form(kwargs)
         if f.is_valid():
             user = f.save()
-            return cls(success=True)
+            return cls(success=True, errors=None)
         else:
             return cls(success=False, errors=f.errors.get_json_data())
 

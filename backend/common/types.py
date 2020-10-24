@@ -35,7 +35,6 @@ class ExpectedErrorType(graphene.Scalar):
     @staticmethod
     def serialize(errors):
         if isinstance(errors, dict):
-            print("here")
             if errors.get("__all__", False):
                 errors["non_field_errors"] = errors.pop("__all__")
             return camelize(errors)

@@ -57,14 +57,11 @@ const GET_POST_QUERY = gql`
     }
 `;
 
-const USER_CREATE_QUERY = gql`
-  mutation createUser($username: String!, $email: String!, $password: String!) { 
-      createUser(username: $username, email: $email, password: $password) {
-         ok
-         user {
-           username
-           email
-         }
+const USER_REGISTER_QUERY = gql`
+  mutation register($username: String!, $email: String!, $password1: String!, $password2: String!) { 
+      register(username: $username, email: $email, password1: $password1, password2: $password2) {
+         success
+         errors
       }
   }
 `;
@@ -86,6 +83,6 @@ export {
     CATEGORIES_QUERY,
     GET_POST_QUERY,
     DELETE_POST,
-    USER_CREATE_QUERY,
+    USER_REGISTER_QUERY,
     USER_LOGIN_MUTATION,
 }
