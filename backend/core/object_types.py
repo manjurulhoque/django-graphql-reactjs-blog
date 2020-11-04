@@ -18,6 +18,7 @@ class CategoryType(DjangoObjectType):
 class PostType(DjangoObjectType):
     user = graphene.Field(UserType, source='user')
     category = graphene.Field(CategoryType, source='category')
+    image_url = graphene.String(source='image_url')
 
     class Meta:
         model = Post

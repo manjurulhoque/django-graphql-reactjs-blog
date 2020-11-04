@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useQuery, useMutation} from 'react-apollo';
 import {useHistory} from "react-router";
 import {CREATE_POST, CATEGORIES_QUERY} from '../queries';
@@ -11,6 +11,15 @@ function CreatePost() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("");
+    const [image, setImage] = useState(null);
+
+    // useEffect(() => {
+    //     if (!localStorage.getItem('gql-token')) {
+    //         history.push({
+    //             pathname: "/",
+    //         });
+    //     }
+    // })
 
     const handleSubmit = (evt) => {
         evt.preventDefault();
@@ -21,7 +30,8 @@ function CreatePost() {
                     title: title,
                     description: description,
                     category: category,
-                }
+                },
+                file: image,
             }
         }).then(r => {
             history.push({
@@ -29,10 +39,10 @@ function CreatePost() {
             });
         }).catch(e => {
             console.log(e);
-            if (e.errors.length) {
-                alert(e.errors[0].message);
-            }
-            alert("Something went wrong");
+            // if (e.errors.length) {
+            //     alert(e.errors[0].message);
+            // }
+            // alert("Something went wrong");
         });
     }
 
@@ -45,7 +55,7 @@ function CreatePost() {
     if (error) return <h4>{error}</h4>;
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} encType={'multipart/form-data'}>
             <div className="form-group">
                 <label htmlFor="title">Title</label>
                 <input type="text"
@@ -77,6 +87,23 @@ function CreatePost() {
                         ))
                     }
                 </select>
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="description">Post Image</label>
+                <input
+                    type="file"
+                    className="form-control"
+                    id="image"
+                    required
+                    onChange={({
+                                   target: {
+                                       validity,
+                                       files: [file]
+                                   }
+                               }) =>
+                        validity.valid && setImage(file)
+                    }/>
             </div>
 
             <button type="submit" className="btn btn-primary">Submit</button>

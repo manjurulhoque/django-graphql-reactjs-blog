@@ -1,5 +1,6 @@
 import graphene
 from django.contrib.auth import get_user_model
+from graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
 from graphql_jwt.decorators import login_required
 
@@ -10,9 +11,9 @@ from common.types import ExpectedErrorType
 from .forms import PostForm, CategoryForm
 from .graphql_mixins import CreateCategoryMixin, UpdateCategoryMixin, DeleteCategoryMixin, CreatePostMixin, \
     UpdatePostMixin, DeletePostMixin
-from .models import Category, Post
-from .object_types import UserType, CategoryType, PostType, CustomMessage
 from .inputs import CategoryInput, PostInput
+from .models import Category, Post
+from .object_types import UserType, CategoryType, PostType
 
 User = get_user_model()
 
@@ -106,19 +107,22 @@ class DeleteCategory2(MutationMixin, DynamicArgsMixin, SingleObjectMixin, Delete
 class CreatePost(graphene.Mutation):
     class Arguments:
         input = PostInput(required=True)
+        file = Upload(required=True)
 
     success = graphene.Boolean()
     errors = graphene.Field(ExpectedErrorType)
     post = graphene.Field(PostType)
 
-    @login_required
-    def mutate(self, info, input=None, **kwargs):
+    def mutate(self, info, input=None, file=None, **kwargs):
+        print(file)
         form = PostForm(input)
         if not form.is_valid():
             return CreatePost(success=False, errors=form.errors.get_json_data(), post=None)
         category = Category.objects.get(id=input.category)
-        post_instance = Post(title=input.title, description=input.description, category=category,
-                             user=info.context.user)
+        post_instance = form.save(commit=False)
+        post_instance.user_id = 1
+        post_instance.image = file
+        # post_instance = Post(title=input.title, description=input.description, category=category, user_id=1)
         post_instance.save()
         return CreatePost(success=True, errors=None, post=post_instance)
 

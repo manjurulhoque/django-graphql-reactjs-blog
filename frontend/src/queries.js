@@ -5,14 +5,20 @@ const POSTS_QUERY = gql`
     posts {
       id
       title
+      description
+      imageUrl
+      category {
+        title
+      }
     }
   }
 `;
 
 const CREATE_POST = gql`
-    mutation createPost($input: PostInput!) {
-        createPost(input: $input) {
-            ok
+    mutation createPost($input: PostInput!, $file: Upload!) {
+        createPost(input: $input, file: $file) {
+            success
+            errors
         }
     }
 `;
@@ -20,7 +26,7 @@ const CREATE_POST = gql`
 const UPDATE_POST = gql`
     mutation updatePost($id: Int!, $input: PostInput!) {
         updatePost(id: $id, input: $input) {
-            ok
+            success
         }
     }
 `;
@@ -28,8 +34,7 @@ const UPDATE_POST = gql`
 const DELETE_POST = gql`
     mutation deletePost($id: Int!) {
         deletePost(id: $id) {
-            ok
-            message
+            success
         }
     }
 `;

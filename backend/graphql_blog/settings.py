@@ -133,3 +133,6 @@ AUTHENTICATION_BACKENDS = [
 
 REGISTER_MUTATION_FIELDS = ["email", "username"]
 LOGIN_ALLOWED_FIELDS = ['username', 'email']
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

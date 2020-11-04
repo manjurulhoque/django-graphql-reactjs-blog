@@ -11,4 +11,4 @@ class PostInput(graphene.InputObjectType):
     title = graphene.String()
     description = graphene.String()
     category = graphene.Int(name="category")
-    user = graphene.Int(name="user")
+    # user = graphene.Int(name="user")

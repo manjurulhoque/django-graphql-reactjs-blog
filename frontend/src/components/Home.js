@@ -3,6 +3,7 @@ import {useQuery, useMutation} from 'react-apollo';
 import {NavLink} from 'react-router-dom';
 import {POSTS_QUERY, DELETE_POST} from '../queries';
 import {useHistory} from "react-router";
+import '../assets/css/home.css';
 
 
 function Home() {
@@ -15,9 +16,7 @@ function Home() {
                 id: id
             }
         }).then(res => {
-            console.log(res);
-            if (res.data && res.data.deletePost.ok) {
-                alert(res.data.deletePost.message);
+            if (res.data && res.data.deletePost.success) {
                 window.location.reload();
             } else {
                 alert(res.data.deletePost.message);
@@ -37,21 +36,62 @@ function Home() {
     if (error) return <h4>{error}</h4>;
 
     return (
-        <ul className="list-group">
-            {data.posts.map(({id, title}) => (
-                <li key={id} className="list-group-item d-flex justify-content-between">
-                    <p className="p-0 m-0 flex-grow-1">{title}</p>
-                    <NavLink exact to={`/edit/${id}`} className="btn btn-success mr-1">EDIT</NavLink>
-                    <button className="btn btn-danger" onClick={() => deletePost(id)}>DELETE</button>
-                </li>
-            ))}
-        </ul>
+        <React.Fragment>
+            {/*<ul className="list-group">
+                {data.posts.map(({id, title}) => (
+                    <li key={id} className="list-group-item d-flex justify-content-between">
+                        <p className="p-0 m-0 flex-grow-1">{title}</p>
+                        <NavLink exact to={`/edit/${id}`} className="btn btn-success mr-1">EDIT</NavLink>
+                        <button className="btn btn-danger" onClick={() => deletePost(id)}>DELETE</button>
+                    </li>
+                ))}
+            </ul>*/}
+            <section className="blog-me pt-100 pb-100" id="blog">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-xl-6 mx-auto text-center">
+                            <div className="section-title mb-100">
+                                <h4>latest blog</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        {data.posts.map(({id, title, description, category, imageUrl}) => (
+                            <div className="col-lg-4 col-md-6" key={id} style={{marginTop: '20px'}}>
+                                <div className="single-blog">
+                                    <div className="blog-img">
+                                        <img src={imageUrl} alt=""/>
+                                        <div className="post-category">
+                                            <a href="#">{category.title}</a>
+                                        </div>
+                                    </div>
+                                    <div className="blog-content">
+                                        <div className="blog-title">
+                                            <h4><a href="#">{title}</a></h4>
+                                            <div className="meta">
+                                                <ul>
+                                                    <li>04 June 2018</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <p>{description}</p>
+                                        <NavLink exact to={`/edit/${id}`} className="btn btn-success mr-1">EDIT</NavLink>
+                                        <button className="btn btn-danger" onClick={() => deletePost(id)}>DELETE</button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        </React.Fragment>
     )
 
     // return (
-    //     <Fragment>
-    //         <Query query={POSTS_QUERY}>
-    //             {({loading, error, data}) => {
+    //
+    // < Fragment >
+    // <Query query={POSTS_QUERY}>
+    // {({loading, error, data}) => {
     //
     //                 if (error) console.log(error);
     //                 return (
