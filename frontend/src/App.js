@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {ApolloClient} from "apollo-client";
 import {ApolloProvider} from 'react-apollo';
 import {BrowserRouter as Router} from 'react-router-dom';
@@ -6,6 +6,7 @@ import BaseRouter from './routes';
 import NavBar from "./components/NavBar";
 import {createUploadLink} from "apollo-upload-client";
 import {InMemoryCache} from "apollo-cache-inmemory";
+import {AuthContextProvider} from './context';
 
 const apolloCache = new InMemoryCache();
 
@@ -19,16 +20,20 @@ const client = new ApolloClient({
 });
 
 function App(props) {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
     return (
         <ApolloProvider client={client}>
-            <Router basename="/">
-                <NavBar/>
-                <div className="container">
-                    <div className="mt-3">
-                        <BaseRouter/>
+            <AuthContextProvider>
+                <Router basename="/">
+                    <NavBar/>
+                    <div className="container">
+                        <div className="mt-3">
+                            <BaseRouter/>
+                        </div>
                     </div>
-                </div>
-            </Router>
+                </Router>
+            </AuthContextProvider>
         </ApolloProvider>
     );
 }

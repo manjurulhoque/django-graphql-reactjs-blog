@@ -1,10 +1,12 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import {useQuery, useMutation} from 'react-apollo';
 import {useHistory} from "react-router";
 import {CREATE_POST, CATEGORIES_QUERY} from '../queries';
+import {AuthContext} from "../context";
 
 
 function CreatePost() {
+    const {state: {isAuthenticated, user}} = useContext(AuthContext);
 
     const history = useHistory();
 
@@ -13,13 +15,13 @@ function CreatePost() {
     const [category, setCategory] = useState("");
     const [image, setImage] = useState(null);
 
-    // useEffect(() => {
-    //     if (!localStorage.getItem('gql-token')) {
-    //         history.push({
-    //             pathname: "/",
-    //         });
-    //     }
-    // })
+    useEffect(() => {
+        if (!isAuthenticated) {
+            history.push({
+                pathname: "/",
+            });
+        }
+    });
 
     const handleSubmit = (evt) => {
         evt.preventDefault();

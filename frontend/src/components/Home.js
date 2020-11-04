@@ -11,19 +11,21 @@ function Home() {
     const history = useHistory();
 
     const deletePost = id => {
-        deleteBlogPost({
-            variables: {
-                id: id
-            }
-        }).then(res => {
-            if (res.data && res.data.deletePost.success) {
-                window.location.reload();
-            } else {
-                alert(res.data.deletePost.message);
-            }
-        }).catch(err => {
-            alert(err.message);
-        })
+        if (window.confirm("Are you sure?")) {
+            deleteBlogPost({
+                variables: {
+                    id: id
+                }
+            }).then(res => {
+                if (res.data && res.data.deletePost.success) {
+                    window.location.reload();
+                } else {
+                    alert(res.data.deletePost.message);
+                }
+            }).catch(err => {
+                alert(err.message);
+            });
+        }
     }
 
     const [deleteBlogPost, result] = useMutation(DELETE_POST);
@@ -56,7 +58,7 @@ function Home() {
                         </div>
                     </div>
                     <div className="row">
-                        {data.posts.map(({id, title, description, category, imageUrl}) => (
+                        {data.posts.map(({id, title, description, category, imageUrl, user: {username}}) => (
                             <div className="col-lg-4 col-md-6" key={id} style={{marginTop: '20px'}}>
                                 <div className="single-blog">
                                     <div className="blog-img">
@@ -75,6 +77,8 @@ function Home() {
                                             </div>
                                         </div>
                                         <p>{description}</p>
+                                        <small>posted by: {username}</small>
+                                        <hr/>
                                         <NavLink exact to={`/edit/${id}`} className="btn btn-success mr-1">EDIT</NavLink>
                                         <button className="btn btn-danger" onClick={() => deletePost(id)}>DELETE</button>
                                     </div>

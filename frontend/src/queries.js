@@ -10,6 +10,9 @@ const POSTS_QUERY = gql`
       category {
         title
       }
+      user {
+        username
+      }
     }
   }
 `;
@@ -24,9 +27,14 @@ const CREATE_POST = gql`
 `;
 
 const UPDATE_POST = gql`
-    mutation updatePost($id: Int!, $input: PostInput!) {
-        updatePost(id: $id, input: $input) {
+    mutation updatePost($id: Int!, $input: PostInput!, $file: Upload!) {
+        updatePost(id: $id, input: $input, file: $file) {
             success
+            errors
+            post {
+              title
+              imageUrl
+            }
         }
     }
 `;
@@ -54,6 +62,7 @@ const GET_POST_QUERY = gql`
             id
             title
             description
+            imageUrl
             category {
                 id
                 title

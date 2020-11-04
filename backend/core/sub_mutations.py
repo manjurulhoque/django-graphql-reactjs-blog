@@ -141,13 +141,14 @@ class UpdatePost(graphene.Mutation):
     class Arguments:
         id = graphene.Int(required=True)
         input = PostInput(required=True)
+        file = Upload(required=True)
 
     post = graphene.Field(PostType)
     success = graphene.Boolean()
     errors = graphene.Field(ExpectedErrorType)
 
     @staticmethod
-    def mutate(root, info, id, input=None):
+    def mutate(root, info, id, input=None, file=None):
         if input.category:
             category = Category.objects.get(id=input.category)
         else:
@@ -157,10 +158,12 @@ class UpdatePost(graphene.Mutation):
             post_instance = Post.objects.get(id=id)
         except Post.DoesNotExist:
             raise GraphQLError("Post not found")
-        form = PostForm(**input, instance=post_instance)
+        form = PostForm(input, instance=post_instance)
         if not form.is_valid():
             return UpdatePost(success=False, errors=form.errors.get_json_data(), post=None)
-        post = form.save()
+        post = form.save(commit=False)
+        post.image = file
+        post.save()
         return UpdatePost(success=True, errors=None, post=post)
 
 

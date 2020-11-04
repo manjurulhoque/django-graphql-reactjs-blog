@@ -1,18 +1,22 @@
-import React, {useState, Fragment, useEffect} from "react";
+import React, {useState, Fragment, useEffect, useContext} from "react";
 import {useQuery, useMutation} from 'react-apollo';
 import {useHistory} from "react-router";
 import {useParams} from "react-router-dom";
 import {CATEGORIES_QUERY, UPDATE_POST, GET_POST_QUERY} from '../queries';
+import {AuthContext} from "../context";
 
 
 function EditPost() {
 
+    const {state: {isAuthenticated, user}} = useContext(AuthContext);
     const history = useHistory();
     let {id} = useParams();
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("");
+    const [image, setImage] = useState(null);
+    const [imageUrl, setImageUrl] = useState("");
 
     const handleSubmit = (evt) => {
         evt.preventDefault();
@@ -24,7 +28,8 @@ function EditPost() {
                     title: title,
                     description: description,
                     category: category,
-                }
+                },
+                file: image,
             }
         }).then(r => {
             history.push({
@@ -48,8 +53,15 @@ function EditPost() {
     });
 
     useEffect(() => {
+        if (!isAuthenticated) {
+            history.push({
+                pathname: "/",
+            });
+        }
+
         if (post_data.data && post_data.data.post) {
             setTitle(post_data.data.post.title);
+            setImageUrl(post_data.data.post.imageUrl);
             setDescription(post_data.data.post.description);
             setCategory(post_data.data.post.category.id);
         }
@@ -93,6 +105,30 @@ function EditPost() {
                             ))
                         }
                     </select>
+                </div>
+
+                <div className="form-group">
+                    <div className="row">
+                        <div className="col-md-6">
+                            <label htmlFor="description">Post Image</label>
+                            <input
+                                type="file"
+                                className="form-control"
+                                id="image"
+                                required
+                                onChange={({
+                                               target: {
+                                                   validity,
+                                                   files: [file]
+                                               }
+                                           }) =>
+                                    validity.valid && setImage(file)
+                                }/>
+                        </div>
+                        <div className="col-md-6">
+                            <img className="img-fluid" src={imageUrl} alt=""/>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" className="btn btn-primary">Submit</button>
