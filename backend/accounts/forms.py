@@ -10,6 +10,6 @@ class RegisterForm(UserCreationForm):
 
     def clean_username(self):
         username = self.cleaned_data.get('username', '')
-        if len(username) < 5:
+        if len(username) < 3:
             raise ValidationError("Username length should be greater than 5", "length")
         return username
