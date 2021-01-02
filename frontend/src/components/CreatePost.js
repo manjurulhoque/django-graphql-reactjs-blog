@@ -1,15 +1,12 @@
 /* eslint-disable */
 import React, {useState, useEffect, useContext} from "react";
 import {useQuery, useMutation} from 'react-apollo';
-import {useHistory} from "react-router";
 import {CREATE_POST, CATEGORIES_QUERY} from '../queries';
 import {AuthContext} from "../context";
 
 
-function CreatePost() {
+function CreatePost({history}) {
     const {state: {isAuthenticated, user}} = useContext(AuthContext);
-
-    const history = useHistory();
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");

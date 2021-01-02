@@ -3,13 +3,10 @@ import React from "react";
 import {useQuery, useMutation} from 'react-apollo';
 import {NavLink} from 'react-router-dom';
 import {POSTS_QUERY, DELETE_POST} from '../queries';
-import {useHistory} from "react-router";
 import '../assets/css/home.css';
 
 
-function Home() {
-
-    const history = useHistory();
+function Home({ history }) {
 
     const deletePost = id => {
         if (window.confirm("Are you sure?")) {

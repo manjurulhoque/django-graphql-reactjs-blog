@@ -4,7 +4,13 @@ import {Link, NavLink} from 'react-router-dom';
 import {AuthContext} from "../context";
 
 function NavBar() {
-    const {state: {isAuthenticated, user}} = useContext(AuthContext);
+    const {state: {isAuthenticated, user}, dispatch: authDispatch} = useContext(AuthContext);
+
+    const onLogout = () => {
+        authDispatch({
+            type: 'LOGOUT'
+        })
+    }
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -42,8 +48,8 @@ function NavBar() {
                         </a>
                         <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a className="dropdown-item" href="#">My Posts</a>
-                            <div className="dropdown-divider"></div>
-                            <a className="dropdown-item" href="#">Logout</a>
+                            <div className="dropdown-divider"/>
+                            <a className="dropdown-item" href="#0" onClick={onLogout}>Logout</a>
                         </div>
                     </li>
                 </ul>
