@@ -8,6 +8,7 @@ import NavBar from "./components/NavBar";
 import {createUploadLink} from "apollo-upload-client";
 import {InMemoryCache} from "apollo-cache-inmemory";
 import {AuthContextProvider} from "./contexts/AuthContext";
+import {PostContextProvider} from "./contexts/PostContext";
 
 const apolloCache = new InMemoryCache();
 
@@ -26,14 +27,16 @@ function App(props) {
     return (
         <ApolloProvider client={client}>
             <AuthContextProvider>
-                <Router basename="/">
-                    <NavBar/>
-                    <div className="container">
-                        <div className="mt-3">
-                            <BaseRouter/>
+                <PostContextProvider>
+                    <Router basename="/">
+                        <NavBar/>
+                        <div className="container">
+                            <div className="mt-3">
+                                <BaseRouter/>
+                            </div>
                         </div>
-                    </div>
-                </Router>
+                    </Router>
+                </PostContextProvider>
             </AuthContextProvider>
         </ApolloProvider>
     );

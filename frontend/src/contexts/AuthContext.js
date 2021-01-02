@@ -2,6 +2,7 @@
 import React, {createContext, useReducer} from 'react';
 import jwtDecode from 'jwt-decode';
 import moment from "moment";
+import {ContextDevTool} from "react-context-devtool";
 
 const token = localStorage.getItem('gql_token');
 let isAuthenticated = false;
@@ -13,7 +14,6 @@ if (token) {
 }
 
 export const AuthContext = createContext({
-    isLoggedIn: isAuthenticated,
     token: token,
     login: () => {
     },
@@ -72,6 +72,7 @@ export const AuthContextProvider = ({children}) => {
                 state,
                 dispatch,
             }}>
+            <ContextDevTool context={AuthContext} id="uniqContextId" displayName="Auth context" />
             {children}
         </AuthContext.Provider>
     )
