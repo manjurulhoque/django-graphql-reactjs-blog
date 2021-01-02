@@ -3,7 +3,7 @@ import React, {useContext, useState} from 'react';
 import '../auth.css';
 import {useMutation} from "react-apollo";
 import {USER_LOGIN_MUTATION} from "../queries";
-import {AuthContext} from "../context";
+import {AuthContext} from "../contexts/AuthContext";
 
 function Login({history}) {
 

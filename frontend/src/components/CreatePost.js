@@ -2,7 +2,7 @@
 import React, {useState, useEffect, useContext} from "react";
 import {useQuery, useMutation} from 'react-apollo';
 import {CREATE_POST, CATEGORIES_QUERY} from '../queries';
-import {AuthContext} from "../context";
+import {AuthContext} from "../contexts/AuthContext";
 
 
 function CreatePost({history}) {

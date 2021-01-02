@@ -7,7 +7,7 @@ import BaseRouter from './routes';
 import NavBar from "./components/NavBar";
 import {createUploadLink} from "apollo-upload-client";
 import {InMemoryCache} from "apollo-cache-inmemory";
-import {AuthContextProvider} from './context';
+import {AuthContextProvider} from "./contexts/AuthContext";
 
 const apolloCache = new InMemoryCache();
 

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, {useContext} from "react";
 import {Link, NavLink} from 'react-router-dom';
-import {AuthContext} from "../context";
+import {AuthContext} from "../contexts/AuthContext";
 
 function NavBar() {
     const {state: {isAuthenticated, user}, dispatch: authDispatch} = useContext(AuthContext);

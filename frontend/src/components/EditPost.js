@@ -4,7 +4,7 @@ import {useQuery, useMutation} from 'react-apollo';
 import {useHistory} from "react-router";
 import {useParams} from "react-router-dom";
 import {CATEGORIES_QUERY, UPDATE_POST, GET_POST_QUERY} from '../queries';
-import {AuthContext} from "../context";
+import {AuthContext} from "../contexts/AuthContext";
 
 
 function EditPost() {
