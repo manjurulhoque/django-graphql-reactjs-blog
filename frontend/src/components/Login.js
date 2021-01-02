@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, {useState} from 'react';
 import '../auth.css';
 import {useHistory} from "react-router";
@@ -31,7 +32,7 @@ function Login(props) {
                     setSuccess(true);
                 } else {
                     r.errors.map((error, index) => {
-                        my_errors.push(error.message);
+                        return my_errors.push(error.message);
                     });
                 }
 

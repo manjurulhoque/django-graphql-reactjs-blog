@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, {useState} from 'react';
 import {ApolloClient} from "apollo-client";
 import {ApolloProvider} from 'react-apollo';

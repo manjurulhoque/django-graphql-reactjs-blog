@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, {useState} from 'react';
 import '../auth.css';
 import {USER_REGISTER_QUERY} from '../queries';
