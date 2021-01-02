@@ -4,6 +4,7 @@ import '../auth.css';
 import {useMutation} from "react-apollo";
 import {USER_LOGIN_MUTATION} from "../queries";
 import {AuthContext} from "../contexts/AuthContext";
+import {useAuth} from "../hooks/useAuth";
 
 function Login({history}) {
 
@@ -11,7 +12,8 @@ function Login({history}) {
     const [password, setPassword] = useState("");
     const [success, setSuccess] = useState(false);
     const [errors, setErrors] = useState([]);
-    const {state: authState, dispatch: authDispatch} = useContext(AuthContext);
+    // const {state: authState, dispatch: authDispatch} = useContext(AuthContext);
+    const {state: authState, dispatch: authDispatch} = useAuth();
 
     const [loginUser, result] = useMutation(USER_LOGIN_MUTATION, {
         variables: {
@@ -25,34 +27,34 @@ function Login({history}) {
         let my_errors = [];
         authDispatch({type: 'LOGIN_FETCHING'});
 
-        setTimeout(() => {
-            loginUser()
-                .then(r => {
-                    my_errors = [];
-                    if (r.data.login.token) {
-                        localStorage.setItem("gql_token", r.data.login.token);
-                        setSuccess(true);
-                        setTimeout(() => {
-                            history.push('/');
-                        }, 600);
-                        authDispatch({type: 'LOGIN_FETCH_SUCCESS', payload: r.data.login.payload});
-                    } else {
-                        r.errors.map((error, index) => {
-                            return my_errors.push(error.message);
-                        });
-                        authDispatch({type: 'LOGIN_FETCH_FAILURE', payload: r.data.errors});
-                    }
-
-                    setErrors(my_errors);
-                })
-                .catch(err => {
-                    err.graphQLErrors.map((error, index) => {
-                        my_errors.push(error.message);
+        loginUser()
+            .then(r => {
+                my_errors = [];
+                if (r.data.login.token) {
+                    localStorage.setItem("gql_token", r.data.login.token);
+                    setSuccess(true);
+                    setTimeout(() => {
+                        history.push('/');
+                    }, 600);
+                    authDispatch({type: 'LOGIN_FETCH_SUCCESS', payload: r.data.login.payload});
+                } else {
+                    r.errors.map((error, index) => {
+                        return my_errors.push(error.message);
                     });
+                    authDispatch({type: 'LOGIN_FETCH_FAILURE', payload: r.data.errors});
+                }
 
-                    setErrors(my_errors);
+                setErrors(my_errors);
+            })
+            .catch(err => {
+                console.log(err);
+                err.graphQLErrors.map((error, index) => {
+                    my_errors.push(error.message);
                 });
-        }, 2000)
+                authDispatch({type: 'LOGIN_FETCH_FAILURE', payload: err.errors});
+
+                setErrors(my_errors);
+            });
     }
 
     return (
