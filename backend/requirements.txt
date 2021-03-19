@@ -1,6 +1,6 @@
 aniso8601==7.0.0
 asgiref==3.2.7
-Django==3.0.7
+Django==3.1.6
 django-cors-headers==3.4.0
 django-graphql-jwt==0.3.1
 graphene==2.1.8
