@@ -1,4 +1,6 @@
 import graphene
+from PIL import Image
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
@@ -8,12 +10,13 @@ from accounts.mixins import DynamicArgsMixin
 from common.bases import MutationMixin
 from common.graphql_mixins import SingleObjectMixin
 from common.types import ExpectedErrorType
-from .forms import PostForm, CategoryForm
+from .forms import PostForm, CategoryForm, ImageUploadForm
 from .graphql_mixins import CreateCategoryMixin, UpdateCategoryMixin, DeleteCategoryMixin, CreatePostMixin, \
     UpdatePostMixin, DeletePostMixin
 from .inputs import CategoryInput, PostInput
 from .models import Category, Post
 from .object_types import UserType, CategoryType, PostType
+from django.core.files.storage import FileSystemStorage
 
 User = get_user_model()
 
@@ -104,24 +107,47 @@ class DeleteCategory2(MutationMixin, DynamicArgsMixin, SingleObjectMixin, Delete
     model = Category
 
 
+class UploadImage(graphene.Mutation):
+    class Arguments:
+        file = Upload(required=True)
+
+    success = graphene.Boolean()
+    path = graphene.String()
+
+    def mutate(self, info, file=None, **kwargs):
+
+        try:
+            fs = FileSystemStorage()
+            filename = fs.save("posts/" + file.name, file)
+            uploaded_file_url = fs.url(filename)
+            # img = Image.open(file)
+            # img.thumbnail((500, 500), Image.ANTIALIAS)
+            # path = info.context.get_host() + settings.MEDIA_ROOT + file.name
+            path = 'http://127.0.0.1:8000' + uploaded_file_url
+            return UploadImage(success=True, path=path)
+        except:
+            pass
+        return UploadImage(success=False, path=None)
+
+
 class CreatePost(graphene.Mutation):
     class Arguments:
         input = PostInput(required=True)
-        file = Upload(required=True)
+        file = Upload(required=False)
 
     success = graphene.Boolean()
     errors = graphene.Field(ExpectedErrorType)
     post = graphene.Field(PostType)
 
     def mutate(self, info, input=None, file=None, **kwargs):
-        print(file)
         form = PostForm(input)
         if not form.is_valid():
             return CreatePost(success=False, errors=form.errors.get_json_data(), post=None)
         category = Category.objects.get(id=input.category)
         post_instance = form.save(commit=False)
         post_instance.user_id = 1
-        post_instance.image = file
+        if file:
+            post_instance.image = file
         # post_instance = Post(title=input.title, description=input.description, category=category, user_id=1)
         post_instance.save()
         return CreatePost(success=True, errors=None, post=post_instance)
@@ -141,7 +167,7 @@ class UpdatePost(graphene.Mutation):
     class Arguments:
         id = graphene.Int(required=True)
         input = PostInput(required=True)
-        file = Upload(required=True)
+        file = Upload(required=False)
 
     post = graphene.Field(PostType)
     success = graphene.Boolean()
@@ -162,7 +188,8 @@ class UpdatePost(graphene.Mutation):
         if not form.is_valid():
             return UpdatePost(success=False, errors=form.errors.get_json_data(), post=None)
         post = form.save(commit=False)
-        post.image = file
+        if file:
+            post.image = file
         post.save()
         return UpdatePost(success=True, errors=None, post=post)
 

@@ -68,13 +68,12 @@ function Home({ history }) {
                                     <div className="blog-content">
                                         <div className="blog-title">
                                             <h4><a href="#">{title}</a></h4>
-                                            <div className="meta">
-                                                <ul>
-                                                    <li>04 June 2018</li>
-                                                </ul>
-                                            </div>
+                                            {/*<div className="meta">*/}
+                                            {/*    <ul>*/}
+                                            {/*        <li>04 June 2018</li>*/}
+                                            {/*    </ul>*/}
+                                            {/*</div>*/}
                                         </div>
-                                        <p>{description}</p>
                                         <small>posted by: {username}</small>
                                         <hr/>
                                         <NavLink exact to={`/edit/${id}`} className="btn btn-success mr-1">EDIT</NavLink>

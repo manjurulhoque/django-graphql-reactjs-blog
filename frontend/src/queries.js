@@ -18,7 +18,7 @@ const POSTS_QUERY = gql`
 `;
 
 const CREATE_POST = gql`
-    mutation createPost($input: PostInput!, $file: Upload!) {
+    mutation createPost($input: PostInput!, $file: Upload) {
         createPost(input: $input, file: $file) {
             success
             errors
@@ -26,8 +26,17 @@ const CREATE_POST = gql`
     }
 `;
 
+const UPLOAD_IMAGE = gql`
+    mutation uploadImage($file: Upload!) {
+        uploadImage(file: $file) {
+            success
+            path
+        }
+    }
+`;
+
 const UPDATE_POST = gql`
-    mutation updatePost($id: Int!, $input: PostInput!, $file: Upload!) {
+    mutation updatePost($id: Int!, $input: PostInput!, $file: Upload) {
         updatePost(id: $id, input: $input, file: $file) {
             success
             errors
@@ -93,6 +102,7 @@ const USER_LOGIN_MUTATION = gql`
 export {
     POSTS_QUERY,
     CREATE_POST,
+    UPLOAD_IMAGE,
     UPDATE_POST,
     CATEGORIES_QUERY,
     GET_POST_QUERY,

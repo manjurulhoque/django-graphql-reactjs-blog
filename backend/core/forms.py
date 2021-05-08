@@ -13,3 +13,7 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ("title", "description", "category")
+
+
+class ImageUploadForm(forms.Form):
+    file = forms.ImageField()

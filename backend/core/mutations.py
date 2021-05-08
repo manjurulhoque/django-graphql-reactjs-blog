@@ -1,7 +1,7 @@
 import graphene
 
 from accounts.mutations import AuthMutation
-from .sub_mutations import CreatePost, UpdatePost, DeletePost, CreateCategory, UpdateCategory, DeleteCategory, CreateUser
+from .sub_mutations import CreatePost, UpdatePost, DeletePost, CreateCategory, UpdateCategory, DeleteCategory, CreateUser, UploadImage
 
 
 class Mutation(AuthMutation, graphene.ObjectType):
@@ -12,3 +12,4 @@ class Mutation(AuthMutation, graphene.ObjectType):
     update_category = UpdateCategory.Field()
     delete_category = DeleteCategory.Field()
     create_user = CreateUser.Field()
+    upload_image = UploadImage.Field()
