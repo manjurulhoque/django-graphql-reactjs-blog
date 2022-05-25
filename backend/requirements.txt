@@ -27,7 +27,7 @@ pep517==0.8.2
 Pillow==9.0.0
 progress==1.5
 promise==2.3
-PyJWT==1.7.1
+PyJWT==2.4.0
 pyparsing==2.4.6
 pytoml==0.1.21
 pytz==2020.1
